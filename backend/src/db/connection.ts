@@ -13,6 +13,10 @@ export async function connectDB() {
     });
     console.log(`⚡ Connected to MongoDB at: ${env.MONGODB_URI}`);
   } catch (err) {
+    if (env.NODE_ENV === 'production') {
+      throw err;
+    }
+
     console.warn('⚠️ Could not connect to external MongoDB server. Starting MongoMemoryServer in-memory fallback...');
     try {
       const { MongoMemoryServer } = await import('mongodb-memory-server');

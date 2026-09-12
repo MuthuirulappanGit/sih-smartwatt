@@ -5,7 +5,16 @@ import type { Request, Response } from 'express';
 let databaseConnection: Promise<void> | null = null;
 
 export default async function handler(req: Request, res: Response) {
-  databaseConnection ??= connectDB();
-  await databaseConnection;
-  return app(req, res);
+  try {
+    databaseConnection ??= connectDB();
+    await databaseConnection;
+    return app(req, res);
+  } catch (error) {
+    databaseConnection = null;
+    console.error('Vercel API initialization failed:', error);
+    return res.status(503).json({
+      success: false,
+      message: 'Database unavailable',
+    });
+  }
 }
